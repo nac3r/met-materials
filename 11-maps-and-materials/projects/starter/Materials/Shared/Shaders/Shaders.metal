@@ -98,6 +98,7 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
       in.uv * params.tiling).rgb;
     }
 
+    // When using a texture for roughness, you no longer read the metallic and roughness properties, as the texture will define those
     
 //  if (is_null_texture(baseColorTexture)) {
 //    baseColor = in.color;

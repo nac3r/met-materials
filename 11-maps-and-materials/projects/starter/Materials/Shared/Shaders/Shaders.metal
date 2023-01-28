@@ -40,6 +40,8 @@ struct VertexIn {
   float3 normal [[attribute(Normal)]];
   float2 uv [[attribute(UV)]];
   float3 color [[attribute(Color)]];
+    float3 tangent [[attribute(Tangent)]];
+    float3 bitangent [[attribute(Bitangent)]];
 };
 
 struct VertexOut {
@@ -48,6 +50,8 @@ struct VertexOut {
   float3 color;
   float3 worldPosition;
   float3 worldNormal;
+    float3 worldTangent;
+    float3 worldBitangent;
 };
 
 vertex VertexOut vertex_main(
@@ -62,7 +66,9 @@ vertex VertexOut vertex_main(
     .uv = in.uv,
     .color = in.color,
     .worldPosition = (uniforms.modelMatrix * in.position).xyz,
-    .worldNormal = uniforms.normalMatrix * in.normal
+    .worldNormal = uniforms.normalMatrix * in.normal,
+    .worldTangent = uniforms.normalMatrix * in.tangent,
+    .worldBitangent = uniforms.normalMatrix * in.bitangent
   };
   return out;
 }
@@ -88,7 +94,7 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
     textureSampler,
     in.uv * params.tiling).rgb;
   }
-  float3 normalDirection = normalize(in.worldNormal);
+//  float3 normalDirection = normalize(in.worldNormal);
     
     
     float3 normal;
@@ -99,15 +105,30 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
       textureSampler,
       in.uv * params.tiling).rgb;
     }
+    normal = normal * 2 - 1; // As normals as from -1 to 1 but rgb is 0 to 1
+    normal = float3x3(
+      in.worldTangent,
+      in.worldBitangent,
+      in.worldNormal) * normal;
     normal = normalize(normal);
    // return float4(normal, 1);
     
-  float3 color = phongLighting(
-    normalDirection,
-    in.worldPosition,
-    params,
-    lights,
-    baseColor
-  );
+    
+    // new color using the texture normals
+    float3 color = phongLighting(
+      normal,
+      in.worldPosition,
+      params,
+      lights,
+      baseColor
+    );
+    
+//  float3 color = phongLighting(
+//    normalDirection,
+//    in.worldPosition,
+//    params,
+//    lights,
+//    baseColor
+//  );
   return float4(color, 1);
 }

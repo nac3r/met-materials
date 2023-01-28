@@ -117,6 +117,9 @@ extension Model {
       index: ParamsBuffer.index)
 
     for mesh in meshes {
+        /*
+         This code includes sending the tangent and bitangent buffers. 
+         */
       for (index, vertexBuffer) in mesh.vertexBuffers.enumerated() {
         encoder.setVertexBuffer(
           vertexBuffer,

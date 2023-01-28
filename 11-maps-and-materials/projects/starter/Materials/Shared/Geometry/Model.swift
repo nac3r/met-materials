@@ -101,6 +101,9 @@ extension Model {
         encoder.setFragmentTexture(
           submesh.textures.baseColor,
           index: BaseColor.index)
+          
+          
+        encoder.setFragmentTexture(submesh.textures.normal, index: NormalTexture.index)
 
         encoder.drawIndexedPrimitives(
           type: .triangle,

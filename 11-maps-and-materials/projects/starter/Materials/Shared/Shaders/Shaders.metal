@@ -71,6 +71,7 @@ fragment float4 fragment_main(
   VertexOut in [[stage_in]],
   constant Params &params [[buffer(ParamsBuffer)]],
   constant Light *lights [[buffer(LightBuffer)]],
+texture2d<float> normalTexture [[texture(NormalTexture)]],
   texture2d<float> baseColorTexture [[texture(BaseColor)]])
 {
   constexpr sampler textureSampler(
@@ -88,6 +89,19 @@ fragment float4 fragment_main(
     in.uv * params.tiling).rgb;
   }
   float3 normalDirection = normalize(in.worldNormal);
+    
+    
+    float3 normal;
+    if (is_null_texture(normalTexture)) {
+      normal = in.worldNormal;
+    } else {
+      normal = normalTexture.sample(
+      textureSampler,
+      in.uv * params.tiling).rgb;
+    }
+    normal = normalize(normal);
+    return float4(normal, 1);
+    
   float3 color = phongLighting(
     normalDirection,
     in.worldPosition,

@@ -77,6 +77,7 @@ fragment float4 fragment_main(
   VertexOut in [[stage_in]],
   constant Params &params [[buffer(ParamsBuffer)]],
   constant Light *lights [[buffer(LightBuffer)]],
+constant Material &_material [[buffer(MaterialBuffer)]],
 texture2d<float> normalTexture [[texture(NormalTexture)]],
   texture2d<float> baseColorTexture [[texture(BaseColor)]])
 {
@@ -86,14 +87,25 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
     mip_filter::linear,
     max_anisotropy(8));
 
-  float3 baseColor;
-  if (is_null_texture(baseColorTexture)) {
-    baseColor = in.color;
-  } else {
-    baseColor = baseColorTexture.sample(
-    textureSampler,
-    in.uv * params.tiling).rgb;
-  }
+    Material material = _material;
+    
+    
+   // float3 baseColor;
+    
+    if (!is_null_texture(baseColorTexture)) {
+      material.baseColor = baseColorTexture.sample(
+      textureSampler,
+      in.uv * params.tiling).rgb;
+    }
+
+    
+//  if (is_null_texture(baseColorTexture)) {
+//    baseColor = in.color;
+//  } else {
+//    baseColor = baseColorTexture.sample(
+//    textureSampler,
+//    in.uv * params.tiling).rgb;
+//  }
 //  float3 normalDirection = normalize(in.worldNormal);
     
     
@@ -114,13 +126,21 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
    // return float4(normal, 1);
     
     
-    // new color using the texture normals
+//    float3 color = phongLighting(
+//      normal,
+//      in.worldPosition,
+//      params,
+//      lights,
+//      material
+//    );
+    
+//     new color using the texture normals
     float3 color = phongLighting(
       normal,
       in.worldPosition,
       params,
       lights,
-      baseColor
+      material
     );
     
 //  float3 color = phongLighting(
@@ -130,5 +150,7 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
 //    lights,
 //    baseColor
 //  );
+    
+    
   return float4(color, 1);
 }

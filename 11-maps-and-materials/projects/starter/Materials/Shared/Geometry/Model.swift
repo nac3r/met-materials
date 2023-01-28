@@ -54,9 +54,38 @@ class Model: Transformable {
       url: assetURL,
       vertexDescriptor: meshDescriptor,
       bufferAllocator: allocator)
-    let (mdlMeshes, mtkMeshes) = try! MTKMesh.newMeshes(
-      asset: asset,
-      device: Renderer.device)
+      var mtkMeshes: [MTKMesh] = []
+      let mdlMeshes =
+        asset.childObjects(of: MDLMesh.self) as? [MDLMesh] ?? []
+      _ = mdlMeshes.map { mdlMesh in
+          
+        // Using a custom value for the normals interpolation, 1.0 being not smooth at all
+//        mdlMesh.addNormals(
+//          withAttributeNamed: MDLVertexAttributeNormal,
+//          creaseThreshold: 1.0)
+//
+          // The normals are provided but not the tangents and bitangents
+          // These are needed to convert normals from tangent space to world space
+          // This new code generates and loads the vertex tangent and bitangent values.
+          
+          /*
+           Model I/O does a few things behind the scenes:
+
+           Add two named attributes to mdlMesh’s vertex descriptor: MDLVertexAttributeTangent and MDLVertexAttributeBitangent.
+           Calculate the tangent and bitangent values.
+           Create two new MTLBuffers to contain them.
+           Update the layout strides on mdlMesh’s vertex descriptor to match the two new buffers.
+           */
+          mdlMesh.addTangentBasis(
+            forTextureCoordinateAttributeNamed:
+              MDLVertexAttributeTextureCoordinate,
+            tangentAttributeNamed: MDLVertexAttributeTangent,
+            bitangentAttributeNamed: MDLVertexAttributeBitangent)
+        mtkMeshes.append(
+          try! MTKMesh(
+            mesh: mdlMesh,
+            device: Renderer.device))
+      }
     meshes = zip(mdlMeshes, mtkMeshes).map {
       Mesh(mdlMesh: $0.0, mtkMesh: $0.1)
     }

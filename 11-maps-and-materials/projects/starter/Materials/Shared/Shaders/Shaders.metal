@@ -100,7 +100,7 @@ texture2d<float> normalTexture [[texture(NormalTexture)]],
       in.uv * params.tiling).rgb;
     }
     normal = normalize(normal);
-    return float4(normal, 1);
+   // return float4(normal, 1);
     
   float3 color = phongLighting(
     normalDirection,

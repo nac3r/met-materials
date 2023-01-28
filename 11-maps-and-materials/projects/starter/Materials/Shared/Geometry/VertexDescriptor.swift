@@ -80,6 +80,31 @@ extension MDLVertexDescriptor {
         bufferIndex: ColorBuffer.index)
     vertexDescriptor.layouts[ColorBuffer.index]
       = MDLVertexBufferLayout(stride: MemoryLayout<float3>.stride)
+      
+      vertexDescriptor.attributes[Tangent.index] =
+        MDLVertexAttribute(
+          name: MDLVertexAttributeTangent,
+          format: .float3,
+          offset: 0,
+          bufferIndex: TangentBuffer.index)
+      vertexDescriptor.layouts[TangentBuffer.index]
+        = MDLVertexBufferLayout(stride: MemoryLayout<float3>.stride)
+      vertexDescriptor.attributes[Bitangent.index] =
+        MDLVertexAttribute(
+          name: MDLVertexAttributeBitangent,
+          format: .float3,
+          offset: 0,
+          bufferIndex: BitangentBuffer.index)
+      vertexDescriptor.layouts[BitangentBuffer.index]
+        = MDLVertexBufferLayout(stride: MemoryLayout<float3>.stride)
+      // When you create the pipeline state in Renderer, the pipeline descriptor will now notify the GPU that it needs to create space for these two extra buffers.
+      
+      
+      /*
+       On creating different vertex descriptors and pipeline state for different models:
+       
+       Note: So far, you’ve only created one pipeline descriptor for all models. But often models will require different vertex layouts. Or if some of your models don’t contain normals, colors and tangents, you might wish to save on creating buffers for them. You can create multiple pipeline states for the different vertex descriptor layouts, and replace the render encoder’s pipeline state before drawing each model.
+       */
     return vertexDescriptor
   }()
 }

@@ -59,7 +59,8 @@ fragment float4 fragment_PBR(
   texture2d<float> normalTexture [[texture(NormalTexture)]],
   texture2d<float> roughnessTexture [[texture(RoughnessTexture)]],
   texture2d<float> metallicTexture [[texture(MetallicTexture)]],
-  texture2d<float> aoTexture [[texture(AOTexture)]])
+  texture2d<float> aoTexture [[texture(AOTexture)]],
+                             depth2d<float> shadowTexture [[texture(15)]])
 {
   constexpr sampler textureSampler(
     filter::linear,
@@ -124,6 +125,31 @@ fragment float4 fragment_PBR(
         normal,
         lightDirection) * light.color);
   }
+    
+    // shadow calculation
+    // 1
+    float3 shadowPosition
+      = in.shadowPosition.xyz / in.shadowPosition.w;
+    // 2
+    float2 xy = shadowPosition.xy;
+    xy = xy * 0.5 + 0.5;
+    xy.y = 1 - xy.y;
+    if (xy.x < 0.0 || xy.x > 1.0 || xy.y < 0.0 || xy.y > 1.0) {
+      return float4(1, 0, 0, 1);
+    }
+
+    xy = saturate(xy);
+    // 3
+    constexpr sampler s(
+      coord::normalized, filter::linear,
+      address::clamp_to_edge,
+      compare_func:: less);
+    float shadow_sample = shadowTexture.sample(s, xy);
+    // 4
+    if (shadowPosition.z > shadow_sample + 0.001) {
+      diffuseColor *= 0.5;
+    }
+
   return float4(diffuseColor + specularColor, 1);
 }
 

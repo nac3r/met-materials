@@ -1,4 +1,4 @@
-/// Copyright (c) 2022 Razeware LLC
+/// Copyright (c) 2023 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -30,43 +30,22 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import MetalKit
+#include <metal_stdlib>
+using namespace metal;
 
-enum PipelineStates {
-  static func createPSO(descriptor: MTLRenderPipelineDescriptor)
-    -> MTLRenderPipelineState {
-    let pipelineState: MTLRenderPipelineState
-    do {
-      pipelineState =
-      try Renderer.device.makeRenderPipelineState(
-        descriptor: descriptor)
-    } catch let error {
-      fatalError(error.localizedDescription)
-    }
-    return pipelineState
-  }
 
-  static func createForwardPSO(colorPixelFormat: MTLPixelFormat) -> MTLRenderPipelineState {
-    let vertexFunction = Renderer.library?.makeFunction(name: "vertex_main")
-    let fragmentFunction = Renderer.library?.makeFunction(name: "fragment_PBR")
-    let pipelineDescriptor = MTLRenderPipelineDescriptor()
-    pipelineDescriptor.vertexFunction = vertexFunction
-    pipelineDescriptor.fragmentFunction = fragmentFunction
-    pipelineDescriptor.colorAttachments[0].pixelFormat = colorPixelFormat
-    pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-    pipelineDescriptor.vertexDescriptor =
-      MTLVertexDescriptor.defaultLayout
-    return createPSO(descriptor: pipelineDescriptor)
-  }
-    
-    static func createShadowPSO() -> MTLRenderPipelineState {
-      let vertexFunction =
-        Renderer.library?.makeFunction(name: "vertex_depth")
-      let pipelineDescriptor = MTLRenderPipelineDescriptor()
-      pipelineDescriptor.vertexFunction = vertexFunction
-      pipelineDescriptor.colorAttachments[0].pixelFormat = .invalid
-      pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-      pipelineDescriptor.vertexDescriptor = .defaultLayout
-      return createPSO(descriptor: pipelineDescriptor)
-    }
+#import "Common.h"
+
+struct VertexIn {
+  float4 position [[attribute(0)]];
+};
+
+vertex float4
+  vertex_depth(const VertexIn in [[stage_in]],
+  constant Uniforms &uniforms [[buffer(UniformsBuffer)]])
+{
+  matrix_float4x4 mvp =
+    uniforms.shadowProjectionMatrix * uniforms.shadowViewMatrix
+    * uniforms.modelMatrix;
+  return mvp * in.position;
 }

@@ -44,6 +44,9 @@ class Renderer: NSObject {
   var params = Params()
 
   var forwardRenderPass: ForwardRenderPass
+    var shadowRenderPass: ShadowRenderPass
+    
+    var shadowCamera = OrthographicCamera()
 
   init(metalView: MTKView, options: Options) {
     guard
@@ -60,6 +63,7 @@ class Renderer: NSObject {
     Self.library = library
     self.options = options
     forwardRenderPass = ForwardRenderPass(view: metalView)
+      shadowRenderPass = ShadowRenderPass()
     super.init()
     metalView.clearColor = MTLClearColor(
       red: 0.93,
@@ -76,6 +80,7 @@ extension Renderer {
     _ view: MTKView,
     drawableSizeWillChange size: CGSize
   ) {
+      shadowRenderPass.resize(view: view, size: size)
     forwardRenderPass.resize(view: view, size: size)
   }
 
@@ -84,6 +89,21 @@ extension Renderer {
     uniforms.projectionMatrix = scene.camera.projectionMatrix
     params.lightCount = UInt32(scene.lighting.lights.count)
     params.cameraPosition = scene.camera.position
+      
+      shadowCamera.viewSize = 16
+      let sun = scene.lighting.lights[0]
+      shadowCamera = OrthographicCamera.createShadowCamera(
+        using: scene.camera,
+        lightPosition: sun.position)
+      uniforms.shadowProjectionMatrix = shadowCamera.projectionMatrix
+      uniforms.shadowViewMatrix = float4x4(
+        eye: shadowCamera.position,
+        center: shadowCamera.center,
+        up: [0, 1, 0])
+      
+      // Debugging the view from the light
+      //uniforms.viewMatrix = uniforms.shadowViewMatrix
+      //uniforms.projectionMatrix = uniforms.shadowProjectionMatrix
   }
 
   func draw(scene: GameScene, in view: MTKView) {
@@ -94,8 +114,17 @@ extension Renderer {
     }
 
     updateUniforms(scene: scene)
+      
+      shadowRenderPass.draw(
+        commandBuffer: commandBuffer,
+        scene: scene,
+        uniforms: uniforms,
+        params: params)
+
 
     forwardRenderPass.descriptor = descriptor
+      
+      forwardRenderPass.shadowTexture = shadowRenderPass.shadowTexture
     forwardRenderPass.draw(
       commandBuffer: commandBuffer,
       scene: scene,

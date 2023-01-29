@@ -143,6 +143,10 @@ extension Model {
             length: MemoryLayout<Material>.stride,
             index: MaterialBuffer.index)
           
+          encoder.setFragmentTexture(
+            submesh.textures.roughness,
+            index: 2)
+          
         encoder.drawIndexedPrimitives(
           type: .triangle,
           indexCount: submesh.indexCount,

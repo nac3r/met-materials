@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1AFD5F8329860436004F8192 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F8229860436004F8192 /* RenderPass.swift */; };
+		1AFD5F8429860436004F8192 /* RenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F8229860436004F8192 /* RenderPass.swift */; };
+		1AFD5F862986060C004F8192 /* ObjectIDRenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F852986060C004F8192 /* ObjectIDRenderPass.swift */; };
+		1AFD5F872986060C004F8192 /* ObjectIDRenderPass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F852986060C004F8192 /* ObjectIDRenderPass.swift */; };
+		1AFD5F8929868793004F8192 /* ObjectId.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F8829868793004F8192 /* ObjectId.metal */; };
+		1AFD5F8A29868793004F8192 /* ObjectId.metal in Sources */ = {isa = PBXBuildFile; fileRef = 1AFD5F8829868793004F8192 /* ObjectId.metal */; };
 		82044E4726C8BA80008347C1 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82044E4626C8BA80008347C1 /* Options.swift */; };
 		82044E4826C8BA80008347C1 /* Options.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82044E4626C8BA80008347C1 /* Options.swift */; };
 		820B881326B8E47E0070A134 /* RenderPassesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 820B880526B8E47D0070A134 /* RenderPassesApp.swift */; };
@@ -78,6 +84,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1AFD5F8229860436004F8192 /* RenderPass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderPass.swift; sourceTree = "<group>"; };
+		1AFD5F852986060C004F8192 /* ObjectIDRenderPass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectIDRenderPass.swift; sourceTree = "<group>"; };
+		1AFD5F8829868793004F8192 /* ObjectId.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ObjectId.metal; sourceTree = "<group>"; };
 		82044E4626C8BA80008347C1 /* Options.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Options.swift; sourceTree = "<group>"; };
 		820B880526B8E47D0070A134 /* RenderPassesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderPassesApp.swift; sourceTree = "<group>"; };
 		820B880626B8E47D0070A134 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -256,6 +265,7 @@
 				82F19CEA2740C978001C5657 /* Lighting.h */,
 				82F19CEB2740C99E001C5657 /* Lighting.metal */,
 				820B883D26B90B530070A134 /* Shaders.metal */,
+				1AFD5F8829868793004F8192 /* ObjectId.metal */,
 				82B6707E274771A80085AD26 /* PBR.metal */,
 			);
 			path = Shaders;
@@ -265,6 +275,8 @@
 			isa = PBXGroup;
 			children = (
 				82B8FAA427797E2F00DDACCC /* ForwardRenderPass.swift */,
+				1AFD5F8229860436004F8192 /* RenderPass.swift */,
+				1AFD5F852986060C004F8192 /* ObjectIDRenderPass.swift */,
 				82B8FAC1277984D200DDACCC /* Pipelines.swift */,
 			);
 			path = "Render Passes";
@@ -438,12 +450,15 @@
 				820B881526B8E47E0070A134 /* ContentView.swift in Sources */,
 				82044E4726C8BA80008347C1 /* Options.swift in Sources */,
 				82F19CE52740BECA001C5657 /* DebugLights.metal in Sources */,
+				1AFD5F8329860436004F8192 /* RenderPass.swift in Sources */,
 				82B8FAC2277984D200DDACCC /* Pipelines.swift in Sources */,
 				82F19CE82740C59D001C5657 /* SceneLighting.swift in Sources */,
 				82F19CEC2740C99E001C5657 /* Lighting.metal in Sources */,
 				82D9AD812738F23E003E025A /* Camera.swift in Sources */,
 				82F19CE32740BECA001C5657 /* DebugLights.swift in Sources */,
 				82EDE5E626CCC4BB00DE47E4 /* TextureController.swift in Sources */,
+				1AFD5F862986060C004F8192 /* ObjectIDRenderPass.swift in Sources */,
+				1AFD5F8929868793004F8192 /* ObjectId.metal in Sources */,
 				827DDAEE2738DE15000E88B4 /* GameScene.swift in Sources */,
 				82D9AD87273902D9003E025A /* Movement.swift in Sources */,
 				820B881326B8E47E0070A134 /* RenderPassesApp.swift in Sources */,
@@ -471,12 +486,15 @@
 				820B881626B8E47E0070A134 /* ContentView.swift in Sources */,
 				82044E4826C8BA80008347C1 /* Options.swift in Sources */,
 				82F19CE62740BECA001C5657 /* DebugLights.metal in Sources */,
+				1AFD5F8429860436004F8192 /* RenderPass.swift in Sources */,
 				82B8FAC3277984D200DDACCC /* Pipelines.swift in Sources */,
 				82F19CE92740C59D001C5657 /* SceneLighting.swift in Sources */,
 				82F19CED2740C99E001C5657 /* Lighting.metal in Sources */,
 				82D9AD822738F23E003E025A /* Camera.swift in Sources */,
 				82F19CE42740BECA001C5657 /* DebugLights.swift in Sources */,
 				82EDE5E726CCC4BB00DE47E4 /* TextureController.swift in Sources */,
+				1AFD5F872986060C004F8192 /* ObjectIDRenderPass.swift in Sources */,
+				1AFD5F8A29868793004F8192 /* ObjectId.metal in Sources */,
 				827DDAEF2738DE15000E88B4 /* GameScene.swift in Sources */,
 				82D9AD88273902D9003E025A /* Movement.swift in Sources */,
 				820B881426B8E47E0070A134 /* RenderPassesApp.swift in Sources */,

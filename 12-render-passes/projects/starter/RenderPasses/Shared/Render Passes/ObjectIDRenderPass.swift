@@ -1,4 +1,4 @@
-/// Copyright (c) 2022 Razeware LLC
+/// Copyright (c) 2023 Razeware LLC
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -32,49 +32,59 @@
 
 import MetalKit
 
-enum PipelineStates {
-  static func createPSO(descriptor: MTLRenderPipelineDescriptor)
-    -> MTLRenderPipelineState {
-    let pipelineState: MTLRenderPipelineState
-    do {
-      pipelineState =
-      try Renderer.device.makeRenderPipelineState(
-        descriptor: descriptor)
-    } catch let error {
-      fatalError(error.localizedDescription)
+struct ObjectIdRenderPass: RenderPass {
+  let label = "Object ID Render Pass"
+  var descriptor: MTLRenderPassDescriptor?
+  var pipelineState: MTLRenderPipelineState
+    var idTexture: MTLTexture?
+    var depthTexture: MTLTexture?
+    var depthStencilState: MTLDepthStencilState?
+    init() {
+      pipelineState = PipelineStates.createObjectIdPSO()
+      descriptor = MTLRenderPassDescriptor()
+        depthStencilState = Self.buildDepthStencilState()
     }
-    return pipelineState
-  }
-
-  static func createForwardPSO(colorPixelFormat: MTLPixelFormat) -> MTLRenderPipelineState {
-    let vertexFunction = Renderer.library?.makeFunction(name: "vertex_main")
-    let fragmentFunction = Renderer.library?.makeFunction(name: "fragment_PBR")
-    let pipelineDescriptor = MTLRenderPipelineDescriptor()
-    pipelineDescriptor.vertexFunction = vertexFunction
-    pipelineDescriptor.fragmentFunction = fragmentFunction
-    pipelineDescriptor.colorAttachments[0].pixelFormat = colorPixelFormat
-    pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-    pipelineDescriptor.vertexDescriptor =
-      MTLVertexDescriptor.defaultLayout
-    return createPSO(descriptor: pipelineDescriptor)
-  }
     
-    static func createObjectIdPSO() -> MTLRenderPipelineState {
-      let pipelineDescriptor = MTLRenderPipelineDescriptor()
-      // 1
-      let vertexFunction =
-        Renderer.library?.makeFunction(name: "vertex_main")
-      let fragmentFunction =
-        Renderer.library?.makeFunction(name: "fragment_objectId")
-      pipelineDescriptor.vertexFunction = vertexFunction
-      pipelineDescriptor.fragmentFunction = fragmentFunction
-      // 2
-      pipelineDescriptor.colorAttachments[0].pixelFormat = .r32Uint
-      // 3
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-      pipelineDescriptor.vertexDescriptor =
-        MTLVertexDescriptor.defaultLayout
-      return Self.createPSO(descriptor: pipelineDescriptor)
-    }
+  mutating func resize(view: MTKView, size: CGSize) {
+      idTexture = Self.makeTexture(
+        size: size,
+        pixelFormat: .r32Uint,
+        label: "ID Texture")
+      
+      depthTexture = Self.makeTexture(
+        size: size,
+        pixelFormat: .depth32Float,
+        label: "ID Depth Texture")
+  }
 
+  func draw(
+    commandBuffer: MTLCommandBuffer,
+    scene: GameScene,
+    uniforms: Uniforms,
+    params: Params
+  ) {
+      guard let descriptor = descriptor else {
+        return
+      }
+      descriptor.colorAttachments[0].texture = idTexture
+      descriptor.depthAttachment.texture = depthTexture
+      descriptor.colorAttachments[0].loadAction = .clear // use colorAttachments[0].clearColor to change the clear to something other than zero
+      descriptor.colorAttachments[0].storeAction = .store
+      guard let renderEncoder =
+        commandBuffer.makeRenderCommandEncoder(descriptor: descriptor)
+      else { return }
+      renderEncoder.label = label
+      renderEncoder.setRenderPipelineState(pipelineState)
+      renderEncoder.setDepthStencilState(depthStencilState)
+      
+
+      for model in scene.models {
+        model.render(
+          encoder: renderEncoder,
+          uniforms: uniforms,
+          params: params)
+      }
+      
+      renderEncoder.endEncoding()
+  }
 }

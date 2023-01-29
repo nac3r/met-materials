@@ -41,6 +41,8 @@ struct Submesh {
   struct Textures {
     let baseColor: MTLTexture?
       let normal: MTLTexture?
+      let roughness: MTLTexture?
+
       
 
 
@@ -75,7 +77,7 @@ private extension Submesh.Textures {
     }
     baseColor = property(with: MDLMaterialSemantic.baseColor)
       normal = property(with: .tangentSpaceNormal)
-
+      roughness = property(with: .roughness)
   }
     
     
@@ -98,5 +100,10 @@ private extension Material {
         self.shininess = shininess.floatValue
       }
       self.ambientOcclusion = 1
+      
+      if let roughness = material?.property(with: .roughness),
+        roughness.type == .float3 {
+        self.roughness = roughness.floatValue
+      }
   }
 }
